@@ -82,7 +82,7 @@ def get_threshold(
     **kwargs
 ):
     """Compute a threshold for an image
-    
+
     threshold_method - one of the TM_ methods above
     threshold_modifier - TM_GLOBAL to calculate one threshold over entire image
                          TM_ADAPTIVE to calculate a per-pixel threshold
@@ -97,13 +97,13 @@ def get_threshold(
     and per-object thresholding, local_threshold is a matrix of threshold
     values representing the threshold to be applied at each pixel of the
     image.
-    
+
     Different methods have optional and required parameters:
     Required:
     TM_PER_OBJECT:
     labels - a labels matrix that defines the extents of the individual objects
              to be thresholded separately.
-    
+
     Optional:
     All:
     mask - a mask of the significant pixels in the image
@@ -208,10 +208,10 @@ def get_adaptive_threshold(
     threshold_method, image, threshold, mask=None, adaptive_window_size=10, **kwargs
 ):
     """Given a global threshold, compute a threshold per pixel
-    
+
     Break the image into blocks, computing the threshold per block.
     Afterwards, constrain the block threshold to .7 T < t < 1.5 T.
-    
+
     Block sizes must be at least 50x50. Images > 500 x 500 get 10x10
     blocks.
     """
@@ -296,7 +296,7 @@ def get_per_object_threshold(
     **kwargs
 ):
     """Return a matrix giving threshold per pixel calculated per-object
-    
+
     image - image to be thresholded
     mask  - mask out "don't care" pixels
     labels - a label mask indicating object boundaries
@@ -355,7 +355,7 @@ get_otsu_threshold.args = inspect.getfullargspec(get_otsu_threshold).args
 
 def get_mog_threshold(image, mask=None, object_fraction=0.2):
     """Compute a background using a mixture of gaussians
-    
+
     This function finds a suitable
     threshold for the input image Block. It assumes that the pixels in the
     image belong to either a background class or an object class. 'pObject'
@@ -371,10 +371,10 @@ def get_mog_threshold(image, mask=None, object_fraction=0.2):
     When the 3 Gaussian distributions have been fitted, it's decided
     whether the intermediate class models background pixels or object
     pixels based on the probability of an object pixel 'pObject' given by
-    the user.        
+    the user.
     """
     cropped_image = np.array(image.flat) if mask is None else image[mask]
-    pixel_count = np.product(cropped_image.shape)
+    pixel_count = np.prod(cropped_image.shape)
     max_count = 512 ** 2  # maximum # of pixels analyzed
     #
     # We need at least 3 pixels to keep from crashing because the highest
@@ -401,9 +401,9 @@ def get_mog_threshold(image, mask=None, object_fraction=0.2):
     # in case there are any quantization effects that have resulted in
     # unnaturally many 0:s or 1:s in the image.
     cropped_image.sort()
-    one_percent = (np.product(cropped_image.shape) + 99) // 100
+    one_percent = (np.prod(cropped_image.shape) + 99) // 100
     cropped_image = cropped_image[one_percent:-one_percent]
-    pixel_count = np.product(cropped_image.shape)
+    pixel_count = np.prod(cropped_image.shape)
     # Guess at the class means for the 3 classes: background,
     # in-between and object
     bg_pixel = cropped_image[int(round(pixel_count * background_fraction / 2.0))]
@@ -500,7 +500,7 @@ def get_background_threshold(image, mask=None):
     2 (an arbitrary empirical factor). The user will presumably adjust the
     multiplication factor as needed."""
     cropped_image = np.array(image.flat) if mask is None else image[mask]
-    if np.product(cropped_image.shape) == 0:
+    if np.prod(cropped_image.shape) == 0:
         return 0
     img_min = np.min(cropped_image)
     img_max = np.max(cropped_image)
@@ -553,11 +553,11 @@ def get_robust_background_threshold(
        lower_outlier_fraction - after ordering the pixels by intensity, remove
            the pixels from 0 to len(image) * lower_outlier_fraction from
            the threshold calculation (default = .05).
-        upper_outlier_fraction - remove the pixels from 
-           len(image) * (1 - upper_outlier_fraction) to len(image) from 
+        upper_outlier_fraction - remove the pixels from
+           len(image) * (1 - upper_outlier_fraction) to len(image) from
            consideration (default = .05).
         deviations_above_average - calculate the standard deviation or MAD and
-           multiply by this number and add to the average to get the final 
+           multiply by this number and add to the average to get the final
            threshold (default = 2)
         average_fn - function used to calculate the average intensity (e.g.
            np.mean, np.median or some sort of mode function). Default = np.mean
@@ -566,7 +566,7 @@ def get_robust_background_threshold(
     """
 
     cropped_image = np.array(image.flat) if mask is None else image[mask]
-    n_pixels = np.product(cropped_image.shape)
+    n_pixels = np.prod(cropped_image.shape)
     if n_pixels < 3:
         return 0
 
@@ -588,9 +588,9 @@ get_robust_background_threshold.args = inspect.getfullargspec(
 
 def mad(a):
     """Calculate the median absolute deviation of a sample
-    
+
     a - a numpy array-like collection of values
-    
+
     returns the median of the deviation of a from its median.
     """
     a = np.asfarray(a).flatten()
@@ -599,9 +599,9 @@ def mad(a):
 
 def binned_mode(a):
     """Calculate a binned mode of a sample
-    
+
     a - array of values
-    
+
     This routine bins the sample into np.sqrt(len(a)) bins. This is a
     number that is a compromise between fineness of measurement and
     the stochastic nature of counting which roughly scales as the
@@ -618,14 +618,14 @@ def binned_mode(a):
 
 def get_ridler_calvard_threshold(image, mask=None):
     """Find a threshold using the method of Ridler and Calvard
-    
+
     The reference for this method is:
-    "Picture Thresholding Using an Iterative Selection Method" 
+    "Picture Thresholding Using an Iterative Selection Method"
     by T. Ridler and S. Calvard, in IEEE Transactions on Systems, Man and
     Cybernetics, vol. 8, no. 8, August 1978.
     """
     cropped_image = np.array(image.flat) if mask is None else image[mask]
-    if np.product(cropped_image.shape) < 3:
+    if np.prod(cropped_image.shape) < 3:
         return 0
     if np.min(cropped_image) == np.max(cropped_image):
         return cropped_image[0]
@@ -661,7 +661,7 @@ get_ridler_calvard_threshold.args = inspect.getfullargspec(
 def get_kapur_threshold(image, mask=None):
     """The Kapur, Sahoo, & Wong method of thresholding, adapted to log-space."""
     cropped_image = np.array(image.flat) if mask is None else image[mask]
-    if np.product(cropped_image.shape) < 3:
+    if np.prod(cropped_image.shape) < 3:
         return 0
     if np.min(cropped_image) == np.max(cropped_image):
         return cropped_image[0]
@@ -678,7 +678,7 @@ def get_kapur_threshold(image, mask=None):
     histogram = histogram[keep]
     histogram_values = histogram_values[keep]
     # check for corner cases
-    if np.product(histogram_values) == 1:
+    if np.prod(histogram_values) == 1:
         return 2 ** histogram_values[0]
         # Normalize to probabilities
     p = histogram.astype(float) / float(np.sum(histogram))
@@ -703,13 +703,13 @@ get_kapur_threshold.args = inspect.getfullargspec(get_kapur_threshold).args
 
 def get_maximum_correlation_threshold(image, mask=None, bins=256):
     """Return the maximum correlation threshold of the image
-    
+
     image - image to be thresholded
-    
+
     mask - mask of relevant pixels
-    
+
     bins - # of value bins to use
-    
+
     This is an implementation of the maximum correlation threshold as
     described in Padmanabhan, "A novel algorithm for optimal image thresholding
     of biological data", Journal of Neuroscience Methods 193 (2010) p 380-384
@@ -767,11 +767,11 @@ get_maximum_correlation_threshold.args = inspect.getfullargspec(
 
 def weighted_variance(image, mask, binary_image):
     """Compute the log-transformed variance of foreground and background
-    
+
     image - intensity image used for thresholding
-    
+
     mask - mask of ignored pixels
-    
+
     binary_image - binary image marking foreground and background
     """
     if not np.any(mask):
@@ -785,8 +785,8 @@ def weighted_variance(image, mask, binary_image):
 
     fg = np.log2(np.maximum(image[binary_image & mask], minval))
     bg = np.log2(np.maximum(image[(~binary_image) & mask], minval))
-    nfg = np.product(fg.shape)
-    nbg = np.product(bg.shape)
+    nfg = np.prod(fg.shape)
+    nbg = np.prod(bg.shape)
     if nfg == 0:
         return np.var(bg)
     elif nbg == 0:
@@ -796,7 +796,7 @@ def weighted_variance(image, mask, binary_image):
 
 
 def sum_of_entropies(image, mask, binary_image):
-    """Bin the foreground and background pixels and compute the entropy 
+    """Bin the foreground and background pixels and compute the entropy
     of the distribution of points among the bins
     """
     mask = mask.copy()
@@ -845,9 +845,9 @@ def sum_of_entropies(image, mask, binary_image):
     #
     hfg = hfg[hfg > 0]
     hbg = hbg[hbg > 0]
-    if np.product(hfg.shape) == 0:
+    if np.prod(hfg.shape) == 0:
         hfg = np.ones((1,), int)
-    if np.product(hbg.shape) == 0:
+    if np.prod(hbg.shape) == 0:
         hbg = np.ones((1,), int)
     #
     # Normalize
@@ -862,10 +862,10 @@ def sum_of_entropies(image, mask, binary_image):
 
 def log_transform(image):
     """Renormalize image intensities to log space
-    
+
     Returns a tuple of transformed image and a dictionary to be passed into
     inverse_log_transform. The minimum and maximum from the dictionary
-    can be applied to an image by the inverse_log_transform to 
+    can be applied to an image by the inverse_log_transform to
     convert it back to its former intensity values.
     """
     orig_min, orig_max = scipy.ndimage.extrema(image)[:2]
@@ -885,7 +885,7 @@ def log_transform(image):
 
 def inverse_log_transform(image, d):
     """Convert the values in image back to the scale prior to log_transform
-    
+
     image - an image or value or values similarly scaled to image
     d - object returned by log_transform
     """

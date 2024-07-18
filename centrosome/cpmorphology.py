@@ -33,25 +33,25 @@ four_connect = scind.generate_binary_structure(2, 1)
 
 def fill_labeled_holes(labels, mask=None, size_fn=None):
     """Fill all background pixels that are holes inside the foreground
- 
+
     A pixel is a hole inside a foreground object if
-    
+
     * there is no path from the pixel to the edge AND
-    
+
     * there is no path from the pixel to any other non-hole
       pixel AND
-      
+
     * there is no path from the pixel to two similarly-labeled pixels that
       are adjacent to two differently labeled non-hole pixels.
-    
+
     labels - the current labeling
-    
+
     mask - mask of pixels to ignore
-    
+
     size_fn - if not None, it is a function that takes a size and a boolean
               indicating whether it is foreground (True) or background (False)
               The function should return True to analyze and False to ignore
-    
+
     returns a filled copy of the labels matrix
     """
     #
@@ -161,9 +161,9 @@ def fill_labeled_holes(labels, mask=None, size_fn=None):
 
 
 def adjacent(labels):
-    """Return a binary mask of all pixels which are adjacent to a pixel of 
+    """Return a binary mask of all pixels which are adjacent to a pixel of
        a different label.
-       
+
     """
     high = labels.max() + 1
     if high > np.iinfo(labels.dtype).max:
@@ -198,10 +198,10 @@ binary_shrink_bottom_left = None
 def binary_shrink_old(image, iterations=-1):
     """Shrink an image by repeatedly removing pixels which have partners
        above, to the left, to the right and below until the image doesn't change
-       
+
        image - binary image to be manipulated
        iterations - # of times to shrink, -1 to shrink until idempotent
-       
+
        There are horizontal/vertical thinners which detect a pixel on
        an edge with an interior pixel either horizontally or vertically
        attached like this:
@@ -318,10 +318,10 @@ erode_table = None
 def binary_shrink(image, iterations=-1):
     """Shrink an image by repeatedly removing pixels which have partners
        above, to the left, to the right and below until the image doesn't change
-       
+
        image - binary image to be manipulated
        iterations - # of times to shrink, -1 to shrink until idempotent
-       
+
        There are horizontal/vertical thinners which detect a pixel on
        an edge with an interior pixel either horizontally or vertically
        attached like this:
@@ -423,7 +423,7 @@ def binary_shrink(image, iterations=-1):
 
 def strel_disk(radius):
     """Create a disk structuring element for morphological operations
-    
+
     radius - radius of the disk
     """
     iradius = int(radius)
@@ -436,10 +436,10 @@ def strel_disk(radius):
 
 def strel_diamond(radius):
     """Create a diamond structuring element for morphological operations
-    
+
     radius - the offset of the corners of the diamond from the origin
              rounded down (e.g. r=2: (0, 2), (2, 0), (0, -2), (-2, 0))
-             
+
     returns a two-dimensional binary array
     """
     iradius = int(radius)
@@ -456,11 +456,11 @@ def strel_diamond(radius):
 
 def strel_line(length, angle):
     """Create a line structuring element for morphological operations
-    
+
     length - distance between first and last pixels of the line, rounded down
-    
+
     angle - angle from the horizontal, counter-clockwise in degrees.
-    
+
     Note: uses draw_line's Bresenham algorithm to select points.
     """
     angle = float(angle) * np.pi / 180.0
@@ -478,7 +478,7 @@ def strel_line(length, angle):
 
 def strel_octagon(radius):
     """Create an octagonal structuring element for morphological operations
-    
+
     radius - the distance from the origin to each edge of the octagon
     """
     #
@@ -506,9 +506,9 @@ def strel_octagon(radius):
 
 def strel_pair(x, y):
     """Create a structing element composed of the origin and another pixel
-    
+
     x, y - x and y offsets of the other pixel
-    
+
     returns a structuring element
     """
     x_center = int(np.abs(x))
@@ -522,12 +522,12 @@ def strel_pair(x, y):
 
 def strel_periodicline(xoff, yoff, n):
     """Create a structuring element composed of a line of evenly-spaced points
-    
+
     xoff, yoff - the line goes through the origin and this point
-    
+
     n - the line is composed of the origin and n points on either side of the
         origin for a total of 2*n + 1 points
-       
+
     The structuring element is composed of the points,
     (k * yoff, k * xoff)
     for k in range(-n, n+1)
@@ -542,10 +542,10 @@ def strel_periodicline(xoff, yoff, n):
 
 def strel_rectangle(width, height):
     """Create a rectangular structuring element
-    
+
     width - the width of the structuring element (in the j direction). The
             width will be rounded down to the nearest multiple of 2*n+1
-            
+
     height = the height of the structuring element (in the i direction). The
             height will be rounded down to the nearest multiple of 2*n+1
     """
@@ -554,7 +554,7 @@ def strel_rectangle(width, height):
 
 def strel_square(s):
     """Create a square structuring element
-    
+
     s - length of side - the length will be rounded down to the nearest multiple
         of 2 * n + 1
     """
@@ -563,7 +563,7 @@ def strel_square(s):
 
 def cpmaximum(image, structure=np.ones((3, 3), dtype=bool), offset=None):
     """Find the local maximum at each point in the image, using the given structuring element
-    
+
     image - a 2-d array of doubles
     structure - a boolean structuring element indicating which
                 local elements should be sampled
@@ -580,9 +580,9 @@ def cpmaximum(image, structure=np.ones((3, 3), dtype=bool), offset=None):
 
 def relabel(image):
     """Given a labeled image, relabel each of the objects consecutively
-    
+
     image - a labeled 2-d integer array
-    returns - (labeled image, object count) 
+    returns - (labeled image, object count)
     """
     #
     # Build a label table that converts an old label # into
@@ -616,11 +616,11 @@ def convex_hull_image(image):
 def convex_hull(labels, indexes=None, fast=True):
     """Given a labeled image, return a list of points per object ordered by
     angle from an interior point, representing the convex hull.s
-    
+
     labels - the label matrix
     indexes - an array of label #s to be processed, defaults to all non-zero
               labels
-    
+
     Returns a matrix and a vector. The matrix consists of one row per
     point in the convex hull. Each row has three columns, the label #,
     the i coordinate of the point and the j coordinate of the point. The
@@ -654,7 +654,7 @@ def convex_hull(labels, indexes=None, fast=True):
 
 def convex_hull_ijv(pixel_labels, indexes, fast=True):
     """Return the convex hull for each label using an ijv labeling
-    
+
     pixel_labels: the labeling of the pixels in i,j,v form where
                   i & j are the coordinates of a pixel and v is
                   the pixel's label number
@@ -899,7 +899,7 @@ def convex_hull_ijv(pixel_labels, indexes, fast=True):
 
 def triangle_areas(p1, p2, p3):
     """Compute an array of triangle areas given three arrays of triangle pts
-    
+
     p1,p2,p3 - three Nx2 arrays of points
     """
     v1 = (p2 - p1).astype(np.float64)
@@ -928,10 +928,10 @@ def triangle_areas(p1, p2, p3):
 
 def fill_convex_hulls(ch_pts, ch_counts):
     """Return the points within the convex hulls of objects
-    
+
     ch_pts - a Nx3 array of columns of label #, i and j as output by convex_hull
     ch_counts - the number of points per object
-    
+
     returns the points in ijv format.
     """
     if len(ch_pts) == 0:
@@ -1018,7 +1018,7 @@ def fill_convex_hulls(ch_pts, ch_counts):
 
 def draw_line(labels, pt0, pt1, value=1):
     """Draw a line between two points
-    
+
     pt0, pt1 are in i,j format which is the reverse of x,y format
     Uses the Bresenham algorithm
     Some code transcribed from http://www.cs.unc.edu/~mcmillan/comp136/Lecture6/Lines.html
@@ -1055,14 +1055,14 @@ def draw_line(labels, pt0, pt1, value=1):
 
 def get_line_pts(pt0i, pt0j, pt1i, pt1j):
     """Retrieve the coordinates of the points along lines
-    
+
     pt0i, pt0j - the starting coordinates of the lines (1-d nparray)
     pt1i, pt1j - the ending coordinates of the lines (1-d nparray)
-    
+
     use the Bresenham algorithm to find the coordinates along the lines
     connectiong pt0 and pt1. pt01, pt0j, pt1i and pt1j must be 1-d arrays
     of similar size and must be of integer type.
-    
+
     The results are returned as four vectors - index, count, i, j.
     index is the index of the first point in the line for each coordinate pair
     count is the # of points in the line
@@ -1204,17 +1204,17 @@ def get_line_pts(pt0i, pt0j, pt1i, pt1j):
 
 def polygon_lines_to_mask(pt0i, pt0j, pt1i, pt1j, shape):
     """Convert a series of polygon lines to a background / foreground mask
-    
+
     pt0i, pt0j, pt1i, pt1j - start / end points of lines. Points are rounded
                              to the nearest integer coordinate if float.
-    
+
     shape - shape of the mask array
-    
+
     This algorithm assumes that the lines form closed polygons. The lines
     can be in any desired order.
     returns a binary array of the given shape with the interiors of
     polygons filled in.
-    
+
     The algorithm assumes that polygons do not overlap. Overlapping polygons
     should be evaluated separately and their results should be or'ed
     """
@@ -1311,7 +1311,7 @@ def polygon_lines_to_mask(pt0i, pt0j, pt1i, pt1j, shape):
 
 def fixup_scipy_ndimage_result(whatever_it_returned):
     """Convert a result from scipy.ndimage to a numpy array
-    
+
     scipy.ndimage has the annoying habit of returning a single, bare
     value instead of an array if the indexes passed in are of length 1.
     For instance:
@@ -1327,7 +1327,7 @@ def fixup_scipy_ndimage_result(whatever_it_returned):
 
 def centers_of_labels(labels):
     """Return the i,j coordinates of the centers of a labels matrix
-    
+
     The result returned is an 2 x n numpy array where n is the number
     of the label minus one, result[0,x] is the i coordinate of the center
     and result[x,1] is the j coordinate of the center.
@@ -1349,11 +1349,11 @@ def centers_of_labels(labels):
 
 def maximum_position_of_labels(image, labels, indices):
     """Return the i,j coordinates of the maximum value within each object
-    
+
     image - measure the maximum within this image
     labels - use the objects within this labels matrix
     indices - label #s to measure
-    
+
     The result returned is an 2 x n numpy array where n is the number
     of the label minus one, result[0,x] is the i coordinate of the center
     and result[x,1] is the j coordinate of the center.
@@ -1403,9 +1403,9 @@ def median_of_labels(image, labels, indices):
 
 def farthest_from_edge(labels, indices):
     """Return coords of the pixel in each object farthest from the edge
-    
+
     labels - find the centers in this
-    
+
     Returns a 2 x n matrix of the i and j positions
     """
     return maximum_position_of_labels(distance_to_edge(labels), labels, indices)
@@ -1413,13 +1413,13 @@ def farthest_from_edge(labels, indices):
 
 def minimum_enclosing_circle(labels, indexes=None, hull_and_point_count=None):
     """Find the location of the minimum enclosing circle and its radius
-    
+
     labels - a labels matrix
     indexes - an array giving the label indexes to be processed
     hull_and_point_count - convex_hull output if already done. None = calculate
-    
+
     returns an Nx3 array organized as i,j of the center and radius
-    Algorithm from 
+    Algorithm from
     http://www.personal.kent.edu/~rmuhamma/Compgeometry/MyCG/CG-Applets/Center/centercli.htm
     who calls it the Applet's Algorithm and ascribes it to Pr. Chrystal
     The original citation is Professor Chrystal, "On the problem to construct
@@ -1750,22 +1750,22 @@ def minimum_enclosing_circle(labels, indexes=None, hull_and_point_count=None):
 
 def associate_by_distance(labels_a, labels_b, distance):
     """Find the objects that are within a given distance of each other
-    
+
     Given two labels matrices and a distance, find pairs of objects that
     are within the given distance of each other where the distance is
     the minimum distance between any point in the convex hull of the
     two objects.
-    
+
     labels_a - first labels matrix
     labels_b - second labels matrix
     distance - distance to measure
-    
+
     returns a n x 2 matrix where m[x,0] is the label number in labels1 and
     m[x,1] is the label number in labels2
-    
+
     Algorithm for computing distance between convex polygons taken from
-    Chin, "Optimal Algorithms for the Intersection and the Minimum Distance 
-    Problems Between Planar Polygons", IEEE Transactions on Computers, 
+    Chin, "Optimal Algorithms for the Intersection and the Minimum Distance
+    Problems Between Planar Polygons", IEEE Transactions on Computers,
     vol. C-32, # 12, December 1983
     """
     if np.max(labels_a) == 0 or np.max(labels_b) == 0:
@@ -1813,7 +1813,7 @@ def associate_by_distance(labels_a, labels_b, distance):
     ab_consider = (ab_distance_minus_radii <= distance) & (~ab_easy_wins)
     ij_consider = np.dstack((i[ab_consider], j[ab_consider]))
     ij_consider.shape = ij_consider.shape[1:]
-    if np.product(ij_consider.shape) == 0:
+    if np.prod(ij_consider.shape) == 0:
         return ij_wins
     if True:
         wins = []
@@ -1894,7 +1894,7 @@ def associate_by_distance(labels_a, labels_b, distance):
 
 def minimum_distance2(hull_a, center_a, hull_b, center_b):
     """Return the minimum distance or 0 if overlap between 2 convex hulls
-    
+
     hull_a - list of points in clockwise direction
     center_a - a point within the hull
     hull_b - list of points in clockwise direction
@@ -1937,7 +1937,7 @@ def slow_minimum_distance2(hull_a, hull_b):
 
 def faster_minimum_distance2(hull_a, center_a, hull_b, center_b):
     """Do the minimum distance using the bimodal property of hull ordering
-    
+
     """
     #
     # Find the farthest vertex in b from some point within A. Find the
@@ -2085,7 +2085,7 @@ def find_farthest(point, hull):
 def find_visible(hull, observer, background):
     """Given an observer location, find the first and last visible
        points in the hull
-       
+
        The observer at "observer" is looking at the hull whose most distant
        vertex from the observer is "background. Find the vertices that are
        the furthest distance from the line between observer and background.
@@ -2121,7 +2121,7 @@ def find_visible(hull, observer, background):
 
 def distance2_to_line(pt, l0, l1):
     """The perpendicular distance squared from a point to a line
-    
+
     pt - point in question
     l0 - one point on the line
     l1 - another point on the line
@@ -2153,11 +2153,11 @@ def within_hull(point, hull):
 
 def all_true(a, indexes):
     """Find which vectors have all-true elements
-    
+
     Given an array, "a" and indexes into the first elements of vectors
     within that array, return an array where each element is true if
     all elements of the corresponding vector are true.
-    
+
     Example: a = [ 1,1,0,1,1,1,1], indexes=[0,3]
              vectors = [[1,1,0],[1,1,1,1]]
              return = [False, True]
@@ -2178,11 +2178,11 @@ def all_true(a, indexes):
 
 def ellipse_from_second_moments(image, labels, indexes, wants_compactness=False):
     """Calculate measurements of ellipses equivalent to the second moments of labels
-    
+
     image  - the intensity at each point
     labels - for each labeled object, derive an ellipse
     indexes - sequence of indexes to process
-    
+
     returns the following arrays:
        coordinates of the center of the ellipse
        eccentricity
@@ -2190,7 +2190,7 @@ def ellipse_from_second_moments(image, labels, indexes, wants_compactness=False)
        minor axis length
        orientation
        compactness (if asked for)
-    
+
     some definitions taken from "Image Moments-Based Structuring and Tracking
     of Objects", LOURENA ROCHA, LUIZ VELHO, PAULO CEZAR P. CARVALHO,
     http://sibgrapi.sid.inpe.br/col/sid.inpe.br/banon/2002/10.23.11.34/doc/35.pdf
@@ -2199,7 +2199,7 @@ def ellipse_from_second_moments(image, labels, indexes, wants_compactness=False)
     to the ellipse by multiplying by 1.154701 which is Matlab's calculation
     of the major and minor axis length for a square of length X divided
     by the actual length of the side of a square of that length.
-    
+
     eccentricity is the distance between foci divided by the major axis length
     orientation is the angle of the major axis with respect to the X axis
     compactness is the variance of the radial distribution normalized by the area
@@ -2222,19 +2222,19 @@ def ellipse_from_second_moments_ijv(
     i, j, image, labels, indexes, wants_compactness=False
 ):
     """Calculate measurements of ellipses equivalent to the second moments of labels
-    
+
     i,j - coordinates of each point
     image  - the intensity at each point
     labels - for each labeled object, derive an ellipse
     indexes - sequence of indexes to process
-    
+
     returns the following arrays:
        coordinates of the center of the ellipse
        eccentricity
        major axis length
        minor axis length
        orientation
-    
+
     some definitions taken from "Image Moments-Based Structuring and Tracking
     of Objects", LOURENA ROCHA, LUIZ VELHO, PAULO CEZAR P. CARVALHO,
     http://sibgrapi.sid.inpe.br/col/sid.inpe.br/banon/2002/10.23.11.34/doc/35.pdf
@@ -2243,7 +2243,7 @@ def ellipse_from_second_moments_ijv(
     to the ellipse by multiplying by 1.154701 which is Matlab's calculation
     of the major and minor axis length for a square of length X divided
     by the actual length of the side of a square of that length.
-    
+
     eccentricity is the distance between foci divided by the major axis length
     orientation is the angle of the major axis with respect to the X axis
     """
@@ -2333,7 +2333,7 @@ def calculate_extents(labels, indexes):
 #    http://www.geovista.psu.edu/sites/geocomp99/Gc99/076/gc_076.htm
 def __calculate_perimeter_scoring():
     """Return a 512 element vector which gives the perimeter given surrounding pts
-    
+
     """
     #
     # This is the array from the paper - a 256 - element array leaving out
@@ -2629,7 +2629,7 @@ def calculate_perimeters(labels, indexes):
 def table_idx_from_labels(labels):
     """Return an array of indexes into a morphology lookup table
     labels - a labels matrix
-    
+
     returns a matrix of values between 0 and 511 of indices appropriate
     for table_lookup where a pixel's index is determined based on whether
     or not the pixel has the same label as its neighbors (and is labeled)
@@ -2658,7 +2658,7 @@ def table_idx_from_labels(labels):
 
 def calculate_convex_hull_areas(labels, indexes=None):
     """Calulculate the area of the convex hull of each labeled object
-    
+
     labels - a label matrix
     indexes - None: calculate convex hull area over entire image
               number: calculate convex hull for a single label
@@ -2774,7 +2774,7 @@ def calculate_convex_hull_areas(labels, indexes=None):
 
 def calculate_solidity(labels, indexes=None):
     """Calculate the area of each label divided by the area of its convex hull
-    
+
     labels - a label matrix
     indexes - the indexes of the labels to measure
     """
@@ -2788,7 +2788,7 @@ def calculate_solidity(labels, indexes=None):
 
 def euler_number(labels, indexes=None):
     """Calculate the Euler number of each label
-    
+
     labels - a label matrix
     indexes - the indexes of the labels to measure or None to
               treat the labels matrix as a binary matrix
@@ -2916,18 +2916,18 @@ def euler_number(labels, indexes=None):
 
 def block(shape, block_shape):
     """Create a labels image that divides the image into blocks
-    
+
     shape - the shape of the image to be blocked
     block_shape - the shape of one block
-    
+
     returns a labels matrix and the indexes of all labels generated
-    
+
     The idea here is to block-process an image by using SciPy label
     routines. This routine divides the image into blocks of a configurable
     dimension. The caller then calls scipy.ndimage functions to process
     each block as a labeled image. The block values can then be applied
     to the image via indexing. For instance:
-    
+
     labels, indexes = block(image.shape, (60,60))
     minima = scind.minimum(image, labels, indexes)
     img2 = image - minima[labels]
@@ -2941,13 +2941,13 @@ def block(shape, block_shape):
     i = (i * multiplier[0]).astype(int)
     j = (j * multiplier[1]).astype(int)
     labels = i * ijmax[1] + j
-    indexes = np.array(list(range(np.product(ijmax))))
+    indexes = np.array(list(range(np.prod(ijmax))))
     return labels, indexes
 
 
 def white_tophat(image, radius=None, mask=None, footprint=None):
     """White tophat filter an image using a circular structuring element
-    
+
     image - image in question
     radius - radius of the circular structuring element. If no radius, use
              an 8-connected structuring element.
@@ -2969,7 +2969,7 @@ def white_tophat(image, radius=None, mask=None, footprint=None):
 
 def black_tophat(image, radius=None, mask=None, footprint=None):
     """Black tophat filter an image using a circular structuring element
-    
+
     image - image in question
     radius - radius of the circular structuring element. If no radius, use
              an 8-connected structuring element.
@@ -3046,14 +3046,14 @@ def grey_dilation(image, radius=None, mask=None, footprint=None):
 
 def grey_reconstruction(image, mask, footprint=None, offset=None):
     """Perform a morphological reconstruction of the image
-    
+
     grey_dilate the image, constraining each pixel to have a value that is
     at most that of the mask.
     image - the seed image
     mask - the mask, giving the maximum allowed value at each point
     footprint - a boolean array giving the neighborhood pixels to be used
                 in the dilation. None = 8-connected
-    
+
     The algorithm is taken from:
     Robinson, "Efficient morphological reconstruction: a downhill filter",
     Pattern Recognition Letters 25 (2004) 1759-1767
@@ -3171,7 +3171,7 @@ def grey_reconstruction(image, mask, footprint=None, offset=None):
 
 def opening(image, radius=None, mask=None, footprint=None):
     """Do a morphological opening
-    
+
     image - pixel image to operate on
     radius - use a structuring element with the given radius. If no radius,
              use an 8-connected structuring element.
@@ -3183,7 +3183,7 @@ def opening(image, radius=None, mask=None, footprint=None):
 
 def closing(image, radius=None, mask=None, footprint=None):
     """Do a morphological closing
-    
+
     image - pixel image to operate on
     radius - use a structuring element with the given radius. If no structuring
              element, use an 8-connected structuring element.
@@ -3219,20 +3219,20 @@ def openlines(image, linelength=10, dAngle=10, mask=None):
 
 def table_lookup(image, table, border_value, iterations=None):
     """Perform a morphological transform on an image, directed by its neighbors
-    
+
     image - a binary image
     table - a 512-element table giving the transform of each pixel given
             the values of that pixel and its 8-connected neighbors.
     border_value - the value of pixels beyond the border of the image.
                    This should test as True or False.
-    
+
     The pixels are numbered like this:
-    
+
     0 1 2
     3 4 5
     6 7 8
     The index at a pixel is the sum of 2**<pixel-number> for pixels
-    that evaluate to true. 
+    that evaluate to true.
     """
     #
     # Test for a table that never transforms a zero into a one:
@@ -3326,7 +3326,7 @@ def index_of(pattern):
 
 def make_table(value, pattern, care=np.ones((3, 3), bool)):
     """Return a table suitable for table_lookup
-    
+
     value - set all table entries matching "pattern" to "value", all others
             to not "value"
     pattern - a 3x3 boolean array with the pattern to match
@@ -3378,10 +3378,10 @@ branchpoints_table = np.array(
 
 def branchpoints(image, mask=None):
     """Remove all pixels from an image except for branchpoints
-    
+
     image - a skeletonized image
     mask -  a mask of pixels excluded from consideration
-    
+
     1 0 1    ? 0 ?
     0 1 0 -> 0 1 0
     0 1 0    0 ? 0
@@ -3420,7 +3420,7 @@ branchings_table = np.array(
 
 def branchings(image, mask=None):
     """Count the number of branches eminating from each pixel
-    
+
     image - a binary image
     mask - optional mask of pixels not to consider
 
@@ -3467,7 +3467,7 @@ bridge_table = np.array(
 
 def bridge(image, mask=None, iterations=1):
     """Fill in pixels that bridge gaps.
-    
+
     1 0 0    1 0 0
     0 0 0 -> 0 1 0
     0 0 1    0 0 1
@@ -3494,11 +3494,11 @@ clean_table = make_table(
 
 def clean(image, mask=None, iterations=1):
     """Remove isolated pixels
-    
+
     0 0 0     0 0 0
     0 1 0 ->  0 0 0
     0 0 0     0 0 0
-    
+
     Border pixels and pixels adjoining masks are removed unless one valid
     neighbor is true.
     """
@@ -3547,11 +3547,11 @@ diag_table = (
 
 def diag(image, mask=None, iterations=1):
     """4-connect pixels that are 8-connected
-    
+
     0 0 0     0 0 ?
     0 0 1 ->  0 1 1
     0 1 0     ? 1 ?
-    
+
     """
     global diag_table
     if mask is None:
@@ -3575,10 +3575,10 @@ endpoints_table = np.array(
 
 def endpoints(image, mask=None):
     """Remove all pixels from an image except for endpoints
-    
+
     image - a skeletonized image
     mask -  a mask of pixels excluded from consideration
-    
+
     1 0 0    ? 0 0
     0 1 0 -> 0 1 0
     0 0 0    0 0 0
@@ -3605,7 +3605,7 @@ fill_table = make_table(
 
 def fill(image, mask=None, iterations=1):
     """Fill isolated black pixels
-    
+
     1 1 1     1 1 1
     1 0 1 ->  1 1 1
     1 1 1     1 1 1
@@ -3636,7 +3636,7 @@ fill4_table = make_table(
 
 def fill4(image, mask=None, iterations=1):
     """Fill 4-connected black pixels
-    
+
     x 1 x     x 1 x
     1 0 1 ->  1 1 1
     x 1 x     x 1 x
@@ -3665,7 +3665,7 @@ hbreak_table = make_table(
 
 def hbreak(image, mask=None, iterations=1):
     """Remove horizontal breaks
-    
+
     1 1 1     1 1 1
     0 1 0 ->  0 0 0 (this case only)
     1 1 1     1 1 1
@@ -3694,7 +3694,7 @@ vbreak_table = make_table(
 
 def vbreak(image, mask=None, iterations=1):
     """Remove horizontal breaks
-    
+
     1 1 1     1 1 1
     0 1 0 ->  0 0 0 (this case only)
     1 1 1     1 1 1
@@ -3731,7 +3731,7 @@ majority_table = np.array([np.sum(pattern_of(i)) > 4 for i in range(512)])
 
 def majority(image, mask=None, iterations=1):
     """A pixel takes the value of the majority of its neighbors
-    
+
     """
     global majority_table
     if mask is None:
@@ -3760,7 +3760,7 @@ remove_table = make_table(
 
 def remove(image, mask=None, iterations=1):
     """Turn 1 pixels to 0 if their 4-connected neighbors are all 0
-    
+
     ? 1 ?     ? 1 ?
     1 1 1  -> 1 0 1
     ? 1 ?     ? 1 ?
@@ -3808,7 +3808,7 @@ spur_table_2 = np.array(
 
 def spur(image, mask=None, iterations=1):
     """Remove spur pixels from an image
-    
+
     0 0 0    0 0 0
     0 1 0 -> 0 0 0
     0 0 1    0 0 ?
@@ -3847,11 +3847,11 @@ thicken_table = np.array(
 
 def thicken(image, mask=None, iterations=1):
     """Thicken the objects in an image where doing so does not connect them
-    
+
     0 0 0    ? ? ?
     0 0 0 -> ? 1 ?
     0 0 1    ? ? ?
-    
+
     1 0 0    ? ? ?
     0 0 0 -> ? 0 ?
     0 0 1    ? ? ?
@@ -3893,7 +3893,7 @@ thin_table = None
 
 def thin(image, mask=None, iterations=1):
     """Thin an image to lines, preserving Euler number
-    
+
     Implements thinning as described in algorithm # 1 from
     Guo, "Parallel Thinning with Two Subiteration Algorithms",
     Communications of the ACM, Vol 32 #3 page 359.
@@ -3951,14 +3951,14 @@ def thin(image, mask=None, iterations=1):
 
 def find_neighbors(labels):
     """Find the set of objects that touch each object in a labels matrix
-    
+
     Construct a "list", per-object, of the objects 8-connected adjacent
     to that object.
     Returns three 1-d arrays:
     * array of #'s of neighbors per object
     * array of indexes per object to that object's list of neighbors
     * array holding the neighbors.
-    
+
     For instance, say 1 touches 2 and 3 and nobody touches 4. The arrays are:
     [ 2, 1, 1, 0], [ 0, 2, 3, 4], [ 2, 3, 1, 1]
     """
@@ -4029,7 +4029,7 @@ def find_neighbors(labels):
 
 def distance_color_labels(labels):
     """Recolor a labels matrix so that adjacent labels have distant numbers
-    
+
     """
     #
     # Color labels so adjacent ones are most distant
@@ -4057,20 +4057,20 @@ def distance_color_labels(labels):
 
 def color_labels(labels, distance_transform=False):
     """Color a labels matrix so that no adjacent labels have the same color
-    
+
     distance_transform - if true, distance transform the labels to find out
          which objects are closest to each other.
-         
+
     Create a label coloring matrix which assigns a color (1-n) to each pixel
     in the labels matrix such that all pixels similarly labeled are similarly
     colored and so that no similiarly colored, 8-connected pixels have
     different labels.
-    
+
     You can use this function to partition the labels matrix into groups
     of objects that are not touching; you can then operate on masks
     and be assured that the pixels from one object won't interfere with
     pixels in another.
-    
+
     returns the color matrix
     """
     if distance_transform:
@@ -4133,16 +4133,16 @@ def color_labels(labels, distance_transform=False):
 
 def skeletonize(image, mask=None, ordering=None):
     """Skeletonize the image
-    
+
     Take the distance transform.
     Order the 1 points by the distance transform.
     Remove a point if it has more than 1 neighbor and if removing it
     does not change the Euler number.
-    
+
     image - the binary image to be skeletonized
-    
+
     mask - only skeletonize pixels within the mask
-    
+
     ordering - a matrix of the same dimensions as the image. The matrix
                provides the ordering of the erosion with the lowest values
                being eroded first. The default is to use the distance transform.
@@ -4197,7 +4197,7 @@ def skeletonize(image, mask=None, ordering=None):
     # of skeletons
     #
     np.random.seed(0)
-    tiebreaker = np.random.permutation(np.arange(np.product(masked_image.shape)))
+    tiebreaker = np.random.permutation(np.arange(np.prod(masked_image.shape)))
     tiebreaker.shape = masked_image.shape
     order = np.lexsort((tiebreaker[masked_image], corner_score[masked_image], distance))
     order = np.ascontiguousarray(order, np.int32)
@@ -4229,7 +4229,7 @@ def skeletonize_labels(labels):
 
 def label_skeleton(skeleton):
     """Label a skeleton so that each edge has a unique label
-    
+
     This operation produces a labels matrix where each edge between
     two branchpoints has a different label. If the skeleton has been
     properly eroded, there are three kinds of points:
@@ -4238,10 +4238,10 @@ def label_skeleton(skeleton):
     3) point adjacent to more than two other points = at end of edge
             connecting to another edge
     4) a branchpoint
-    
+
     We do all connected components here where components are 8-connected
     but a point in category 3 can't connect to another point in category 3.
-    
+
     Returns the labels matrix and the count as a tuple
     """
     bpts = branchpoints(skeleton)
@@ -4321,10 +4321,10 @@ __skel_length_table = None
 
 def skeleton_length(labels, indices=None):
     """Compute the length of all skeleton branches for labeled skeletons
-    
+
     labels - a labels matrix
     indices - the indexes of the labels to be measured. Default is all
-    
+
     returns an array of one skeleton length per label.
     """
     global __skel_length_table
@@ -4377,9 +4377,9 @@ def skeleton_length(labels, indices=None):
 
 def distance_to_edge(labels):
     """Compute the distance of a pixel to the edge of its object
-    
+
     labels - a labels matrix
-    
+
     returns a matrix of distances
     """
     colors = color_labels(labels)
@@ -4396,19 +4396,19 @@ def distance_to_edge(labels):
 
 def regional_maximum(image, mask=None, structure=None, ties_are_ok=False):
     """Return a binary mask containing only points that are regional maxima
-    
+
     image     - image to be transformed
     mask      - mask of relevant pixels
     structure - binary structure giving the neighborhood and connectivity
                 in which to search for maxima. Default is 8-connected.
     ties_are_ok - if this is true, then adjacent points of the same magnitude
-                  are rated as maxima. 
-    
+                  are rated as maxima.
+
     Find locations for which all neighbors as defined by the structure have
     lower values. The algorithm selects only one of a set of adjacent locations
     with identical values, first using a distance transform to find the
     innermost location, then, among equals, selected randomly.
-    
+
     A location cannot be a local maximum if it is touching the edge or a
     masked pixel.
     """
@@ -4429,7 +4429,7 @@ def regional_maximum(image, mask=None, structure=None, ties_are_ok=False):
         labels, label_count = scind.label(result, eight_connect)
         np.random.seed(0)
         ro_distance = rank_order(distance)[0].astype(float)
-        count = np.product(ro_distance.shape)
+        count = np.prod(ro_distance.shape)
         ro_distance.flat += np.random.permutation(count).astype(float) / float(count)
         positions = scind.maximum_position(
             ro_distance, labels, np.arange(label_count) + 1
@@ -4486,14 +4486,14 @@ def regional_maximum(image, mask=None, structure=None, ties_are_ok=False):
 
 def all_connected_components(i, j):
     """Associate each label in i with a component #
-    
+
     This function finds all connected components given an array of
     associations between labels i and j using a depth-first search.
-    
+
     i & j give the edges of the graph. The first step of the algorithm makes
     bidirectional edges, (i->j and j<-i), so it's best to only send the
     edges in one direction (although the algorithm can withstand duplicates).
-    
+
     returns a label for each vertex up to the maximum named vertex in i.
     """
     if len(i) == 0:
@@ -4519,13 +4519,13 @@ def all_connected_components(i, j):
 
 def pairwise_permutations(i, j):
     """Return all permutations of a set of groups
-    
+
     This routine takes two vectors:
     i - the label of each group
     j - the members of the group.
-    
+
     For instance, take a set of two groups with several members each:
-    
+
     i | j
     ------
     1 | 1
@@ -4535,7 +4535,7 @@ def pairwise_permutations(i, j):
     2 | 4
     2 | 5
     2 | 6
-    
+
     The output will be
     i | j1 | j2
     -----------
@@ -4664,7 +4664,7 @@ def pairwise_permutations(i, j):
 
 def is_local_maximum(image, labels, footprint):
     """Return a boolean array of points that are local maxima
-    
+
     image - intensity image
     labels - find maxima only within labels. Zero is reserved for background.
     footprint - binary mask indicating the neighborhood to be examined
@@ -4751,7 +4751,7 @@ def angular_distribution(labels, resolution=100, weights=None):
     the object centers, in an attempt to be accurate for small
     objects.
 
-    The ChordRatio of an object can be approximated by 
+    The ChordRatio of an object can be approximated by
     >>> angdist = angular_distribution(labels, resolution)
     >>> angdist2 = angdist[:, :resolution//2] + angdist[:, resolution//2] # map to widths, rather than radii
     >>> chord_ratio = np.sqrt(angdist2.max(axis=1) / angdist2.min(axis=1)) # sqrt because these are sectors, not triangles
@@ -4806,14 +4806,14 @@ def angular_distribution(labels, resolution=100, weights=None):
 
 def feret_diameter(chulls, counts, indexes):
     """Return the minimum and maximum Feret diameter for each object
-    
+
     This function takes the convex hull data, as generated by convex_hull
     and returns the minimum and maximum Feret diameter for each convex hull.
-    
+
     chulls    - an n x 3 matrix giving the label #, the i coordinate and the
                 j coordinate for each vertex in the convex hull
     counts    - the number of points in each convex hull
-    
+
     returns two arrays, the minimum and maximum diameter per object.
     """
     #
@@ -5024,11 +5024,11 @@ def feret_diameter(chulls, counts, indexes):
 
 def is_obtuse(p1, v, p2):
     """Determine whether the angle, p1 - v - p2 is obtuse
-    
+
     p1 - N x 2 array of coordinates of first point on edge
     v - N x 2 array of vertex coordinates
     p2 - N x 2 array of coordinates of second point on edge
-    
+
     returns vector of booleans
     """
     p1x = p1[:, 1]
@@ -5046,10 +5046,10 @@ def is_obtuse(p1, v, p2):
 
 def single_shortest_paths(start_node, weights):
     """Find the shortest path from the start node to all others
-    
+
     start_node - index of the node to start at
     weights - n x n matrix giving the cost of going from i to j
-    
+
     returns a vector giving the predecessor index for each node
     and a vector of the cost of reaching each node from the start node
     """
@@ -5071,15 +5071,15 @@ def single_shortest_paths(start_node, weights):
 
 def get_outline_pts(labels, idxs):
     """Get the outline points of objects in clockwise order
-    
+
     Given a labels matrix of contiguously-labeled objects, trace
     the exteriors of those objects to get the points of the outline
     in clockwise order.
-    
+
     labels - a labels matrix
-    
+
     idxs - return points for the labels named by this array
-    
+
     Returns an Nx2 array of points, a vector of offsets to the first point
     for each object and a vector of counts of points per
     indexed object.

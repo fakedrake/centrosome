@@ -39,7 +39,7 @@ def stretch(image, mask=None):
     returns the stretched image
     """
     image = np.array(image, float)
-    if np.product(image.shape) == 0:
+    if np.prod(image.shape) == 0:
         return image
     if mask is None:
         minval = np.min(image)
